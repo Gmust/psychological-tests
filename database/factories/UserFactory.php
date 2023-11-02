@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Test;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -20,10 +21,13 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        $testIds = Test::factory()->count(5)->create()->pluck('id')->toArray();
+
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
+            'passed_tests_ids' => json_encode($testIds, JSON_THROW_ON_ERROR),
         ];
     }
 
