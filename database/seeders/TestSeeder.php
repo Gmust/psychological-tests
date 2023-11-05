@@ -8,6 +8,7 @@ use App\Models\Question;
 use App\Models\Test;
 use Database\Factories\QuestionFactory;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class TestSeeder extends Seeder
 {
@@ -16,14 +17,17 @@ class TestSeeder extends Seeder
      */
     public function run(): void
     {
-        Test::factory()
-            ->count(10)
-            ->has(Question::factory()->count(10)->has(Answer::factory()->count(4)))
-            ->create();
+        DB::transaction(function () {
 
-        Test::factory()
-            ->count(4)
-            ->has(Question::factory()->count(4)->has(Answer::factory()->count(2)))
-            ->create();
+            Test::factory()
+                ->count(10)
+                ->has(Question::factory()->count(10)->has(Answer::factory()->count(4)))
+                ->create();
+
+            Test::factory()
+                ->count(4)
+                ->has(Question::factory()->count(4)->has(Answer::factory()->count(2)))
+                ->create();
+        });
     }
 }

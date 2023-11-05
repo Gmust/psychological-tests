@@ -26,5 +26,5 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1'], funct
     Route::apiResource('tests', TestController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('questions', QuestionController::class);
-    Route::apiResource('users', AnswerController::class);
+    Route::apiResource('answers', AnswerController::class);
 });

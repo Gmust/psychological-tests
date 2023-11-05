@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Role;
 use App\Models\Test;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
@@ -27,7 +28,7 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
             'password' => static::$password ??= Hash::make('password'),
-            'passed_tests_ids' => json_encode($testIds, JSON_THROW_ON_ERROR),
+            'passed_tests' => json_encode($testIds, JSON_THROW_ON_ERROR),
         ];
     }
 

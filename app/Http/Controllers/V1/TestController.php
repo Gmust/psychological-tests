@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\TestResource;
 use App\Models\Test;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Response;
 
 class TestController extends Controller
@@ -13,9 +14,9 @@ class TestController extends Controller
     /**
      * @return Response
      */
-    public function index(): Response
+    public function index()
     {
-        return Test::with(['questions.answers'])->paginate(10);
+        return  Test::with(['questions.answers'])->paginate(10);
     }
 
     /**
