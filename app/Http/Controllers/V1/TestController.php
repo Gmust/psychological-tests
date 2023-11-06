@@ -29,30 +29,29 @@ class TestController extends Controller
     public function store(StoreTestRequest $request)
     {
         try {
-            $jsonData = $request; // Get the JSON data from the request
+            $jsonData = $request;
+            $test = Test::create([
+                'title' => $jsonData['title'],
+                'total_points' => $jsonData['totalPoints'],
+                'result' => $jsonData['result'],
+            ]);
 
-            DB::transaction(function () use ($jsonData) {
-                $test = Test::create([
-                    'title' => $jsonData['title'],
-                    'total_points' => $jsonData['totalPoints'],
-                    'result' => $jsonData['result'],
-                ]);
+            foreach ($jsonData['questions'] as $questionData) {
+                $question = new Question(['question_text' => $questionData['questionText']]);
+                $test->questions()->save($question);
 
-                foreach ($jsonData['questions'] as $questionData) {
-                    $question = new Question(['question_text' => $questionData['questionText']]);
-                    $test->questions()->save($question);
-
-                    foreach ($questionData['answers'] as $answerData) {
-                        $answer = new Answer([
-                            'answer_text' => $answerData['answerText'],
-                            'points_for_answer' => $answerData['pointsForAnswer'],
-                        ]);
-                        $question->answers()->save($answer);
-                    }
+                foreach ($questionData['answers'] as $answerData) {
+                    $answer = new Answer([
+                        'answer_text' => $answerData['answerText'],
+                        'points_for_answer' => $answerData['pointsForAnswer'],
+                    ]);
+                    $question->answers()->save($answer);
                 }
-                return new TestResource($test);
-            });
+            }
+            $createdTest = Test::with('questions.answers')->where('id', $test->id)->first();
+            return response()->json(['message' => 'Data saved successfully', 'test' => new TestResource($createdTest)], 201);
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['error' => 'Failed to save data'], 500);
         }
     }
