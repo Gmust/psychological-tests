@@ -45,7 +45,7 @@ class User extends Authenticatable
      */
     protected $casts = [
         'password' => 'hashed',
-        'passedTests' => 'array'
+        'passed_tests' => 'array',
     ];
 
 

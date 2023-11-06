@@ -13,6 +13,13 @@ class Test extends Model
     use HasFactory;
 
 
+    protected $fillable = [
+      'title',
+      'totalPoints',
+      'result',
+      'questions'
+    ];
+
     public function questions(): HasMany
     {
         return $this->hasMany(Question::class);

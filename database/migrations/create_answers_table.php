@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('answers', function (Blueprint $table) {
             $table->id();
             $table->integer('question_id');
-            $table->integer('points_for_answer');
-            $table->string('answer_text');
+            $table->integer('points_for_answer')->nullable();
+            $table->string('answer_text')->nullable();
             $table->timestamps();
         });
     }

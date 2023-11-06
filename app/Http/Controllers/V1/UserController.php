@@ -14,8 +14,8 @@ class UserController extends Controller
 
     public function index()
     {
-        return User::with('role', 'passedTests')->paginate();
-        //return new UserCollection(User::with('role', 'passedTests')->paginate());
+        //return User::with('role', 'passedTests')->paginate();
+        return new UserCollection(User::with('role', 'passedTests')->paginate());
     }
 
     public function show(int $id)

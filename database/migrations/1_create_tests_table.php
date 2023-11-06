@@ -14,7 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->string('title');
             $table->string('result');
-            $table->integer('total_points');
+            $table->integer('total_points')->default(0);
             $table->timestamps();
         });
     }
