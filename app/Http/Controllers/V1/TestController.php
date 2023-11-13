@@ -4,6 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\StoreTestRequest;
+use App\Http\Requests\V1\UpdateCustomerRequest;
 use App\Http\Resources\V1\TestResource;
 use App\Models\Answer;
 use App\Models\Question;
@@ -14,6 +15,37 @@ use Illuminate\Support\Facades\DB;
 
 class TestController extends Controller
 {
+
+    private function transformData(array $data): array
+    {    // Log or dump the data for debugging
+        \Log::info('Transformed Data:', $data);
+        // or
+        // dd($data);
+
+        // Rename "totalPoints" to "total_points" if it exists
+        if (isset($data['totalPoints'])) {
+            $data['total_points'] = $data['totalPoints'];
+            unset($data['totalPoints']);
+        }
+
+        return $data;
+    }
+
+    /**
+     * @param Request $request
+     * @param Test $test
+     * @return string|false
+     */
+    public function update(UpdateCustomerRequest $request, Test $test): bool|string
+    {
+        $transformedData = $this->transformData($request->all());
+        $test->update($transformedData);
+
+        return response()->json(['message' => 'Data saved successfully', 'test' => new TestResource($test)], 201);
+//        $test->update($request->all());
+//        return response()->json(['message' => 'Data saved successfully', 'test' => new TestResource($test)], 201);
+    }
+
 
     /**
      * @return Response
@@ -26,7 +58,7 @@ class TestController extends Controller
     /**
      *
      */
-    public function store(StoreTestRequest $request)
+    public function store(StoreTestRequest $request): \Illuminate\Http\JsonResponse
     {
         try {
             $jsonData = $request;
@@ -65,6 +97,14 @@ class TestController extends Controller
     {
         return new TestResource(Test::with(['questions.answers'])->find($id));
     }
+
+
+    public function destroy()
+    {
+
+    }
+
+
 
 
 }

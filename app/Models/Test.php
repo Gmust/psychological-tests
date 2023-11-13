@@ -14,10 +14,10 @@ class Test extends Model
 
 
     protected $fillable = [
-      'title',
-      'totalPoints',
-      'result',
-      'questions'
+        'title',
+        'total_points',
+        'result',
+        'questions'
     ];
 
     public function questions(): HasMany
