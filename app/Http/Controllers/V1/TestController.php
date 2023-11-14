@@ -4,7 +4,7 @@ namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\V1\StoreTestRequest;
-use App\Http\Requests\V1\UpdateCustomerRequest;
+use App\Http\Requests\V1\UpdateTestRequest;
 use App\Http\Resources\V1\TestResource;
 use App\Models\Answer;
 use App\Models\Question;
@@ -36,7 +36,7 @@ class TestController extends Controller
      * @param Test $test
      * @return string|false
      */
-    public function update(UpdateCustomerRequest $request, Test $test): bool|string
+    public function update(UpdateTestRequest $request, Test $test): bool|string
     {
         $transformedData = $this->transformData($request->all());
         $test->update($transformedData);
