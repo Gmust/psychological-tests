@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1'], static function () {
+Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middleware'=>'auth:sanctum'], static function () {
     Route::apiResource('tests', TestController::class);
     Route::apiResource('users', UserController::class);
     Route::apiResource('questions', QuestionController::class);
