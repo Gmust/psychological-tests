@@ -17,17 +17,12 @@ class TestController extends Controller
 {
 
     private function transformData(array $data): array
-    {    // Log or dump the data for debugging
-        \Log::info('Transformed Data:', $data);
-        // or
-        // dd($data);
-
+    {
         // Rename "totalPoints" to "total_points" if it exists
         if (isset($data['totalPoints'])) {
             $data['total_points'] = $data['totalPoints'];
             unset($data['totalPoints']);
         }
-
         return $data;
     }
 
@@ -42,8 +37,6 @@ class TestController extends Controller
         $test->update($transformedData);
 
         return response()->json(['message' => 'Data saved successfully', 'test' => new TestResource($test)], 201);
-//        $test->update($request->all());
-//        return response()->json(['message' => 'Data saved successfully', 'test' => new TestResource($test)], 201);
     }
 
 
