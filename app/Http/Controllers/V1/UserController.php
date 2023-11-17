@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\V1\UserCollection;
+use App\Http\Resources\V1\UserResource;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -51,7 +53,7 @@ class UserController extends Controller
       ], 200);
 
     } catch (\Throwable $th) {
-     return  response()->json([
+      return response()->json([
         'status' => false,
         'message' => $th->getMessage()
       ], 500);
@@ -70,7 +72,7 @@ class UserController extends Controller
     try {
       $validateUser = Validator::make($request->all(), [
         'email' => 'required|email',
-        'password' => 'requires'
+        'password' => 'required'
       ]);
 
       if ($validateUser->fails()) {
@@ -88,22 +90,24 @@ class UserController extends Controller
         ], 401);
       }
 
-      $user = User::where('email', $request->email)->first();
+      $user = User::with('role', 'passedTests')->where('email', $request->email)->first();
 
       if ($user->role_id === 1) {
         return response()->json([
           'status' => true,
           'message' => 'User logged in successfully',
-          'token' => $user->createToken('admin-token')->plainTextToken
+          'token' => $user->createToken('admin-token', ['create', 'update', 'delete'])->plainTextToken,
+          'user' => new UserResource($user)
         ], 200);
       }
       return response()->json([
         'status' => true,
         'message' => 'User logged in successfully',
-        'token' => $user->createToken('user-token')->plainTextToken
+        'token' => $user->createToken('user-token')->plainTextToken,
+        'user' => new UserResource($user)
       ], 200);
     } catch (\Throwable $th) {
-      response()->json([
+      return response()->json([
         'status' => false,
         'message' => $th->getMessage()
       ], 500);
