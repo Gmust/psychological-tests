@@ -3,23 +3,112 @@
 namespace App\Http\Controllers\V1;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\UserCollection;
-use App\Http\Resources\V1\UserResource;
 use App\Models\User;
-use Illuminate\Http\Client\Response;
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
 
+  /**
+   * Create user
+   * @param Request $request
+   * @return JsonResponse
+   *
+   **/
 
-    public function index()
-    {
-        //return User::with('role', 'passedTests')->paginate();
-        return new UserCollection(User::with('role', 'passedTests')->paginate());
-    }
+  public function createUser(Request $request)
+  {
+    try {
+      $validateUser = Validator::make($request->all(),
+        [
+          'name' => 'required',
+          'email' => 'required|email|unique:users,email',
+          'password' => 'required'
+        ]);
 
-    public function show(int $id)
-    {
-        return new UserResource(User::with('role')->find($id));
+      if ($validateUser->fails()) {
+        return response()->json([
+          'status' => false,
+          'message' => 'Validation Error',
+          'errors' => $validateUser->errors()
+        ], 401);
+      }
+
+      $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password)
+      ]);
+
+      return response()->json([
+        'status' => true,
+        'message' => 'User created successfully',
+        'token' => $user->createToken('user-token')->plainTextToken
+      ], 200);
+
+    } catch (\Throwable $th) {
+     return  response()->json([
+        'status' => false,
+        'message' => $th->getMessage()
+      ], 500);
     }
+  }
+
+
+  /**
+   *
+   * @param Request
+   * @return JsonResponse
+   *
+   **/
+  public function loginUser(Request $request)
+  {
+    try {
+      $validateUser = Validator::make($request->all(), [
+        'email' => 'required|email',
+        'password' => 'requires'
+      ]);
+
+      if ($validateUser->fails()) {
+        return response()->json([
+          'status' => false,
+          'message' => 'Validation Error',
+          'errors' => $validateUser->errors()
+        ], 401);
+      }
+
+      if (!Auth::attempt($request->only(['email', 'password']))) {
+        return response()->json([
+          'status' => false,
+          'message' => 'Invalid credentials'
+        ], 401);
+      }
+
+      $user = User::where('email', $request->email)->first();
+
+      if ($user->role_id === 1) {
+        return response()->json([
+          'status' => true,
+          'message' => 'User logged in successfully',
+          'token' => $user->createToken('admin-token')->plainTextToken
+        ], 200);
+      }
+      return response()->json([
+        'status' => true,
+        'message' => 'User logged in successfully',
+        'token' => $user->createToken('user-token')->plainTextToken
+      ], 200);
+    } catch (\Throwable $th) {
+      response()->json([
+        'status' => false,
+        'message' => $th->getMessage()
+      ], 500);
+    }
+  }
+
+
 }

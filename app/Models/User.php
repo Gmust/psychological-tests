@@ -40,6 +40,7 @@ class User extends Authenticatable
 
   protected $attributes = [
     'passed_tests' => '[]',
+    'role_id' => 2
   ];
 
   /**

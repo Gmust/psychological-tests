@@ -1,10 +1,10 @@
 <?php
 
 use App\Http\Controllers\V1\AnswerController;
+use App\Http\Controllers\V1\LoginController;
 use App\Http\Controllers\V1\QuestionController;
 use App\Http\Controllers\V1\TestController;
 use App\Http\Controllers\V1\UserController;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -22,9 +22,12 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middleware'=>'auth:sanctum'], static function () {
-    Route::apiResource('tests', TestController::class);
-    Route::apiResource('users', UserController::class);
-    Route::apiResource('questions', QuestionController::class);
-    Route::apiResource('answers', AnswerController::class);
+Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middleware' => 'auth:sanctum'], static function () {
+  Route::apiResource('tests', TestController::class);
+  Route::apiResource('users', UserController::class);
+  Route::apiResource('questions', QuestionController::class);
+  Route::apiResource('answers', AnswerController::class);
 });
+
+Route::post('/auth/register', [UserController::class, 'createUser']);
+Route::post('/auth/login', [UserController::class, 'loginUser']);
