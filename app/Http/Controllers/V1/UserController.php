@@ -5,6 +5,7 @@ namespace App\Http\Controllers\V1;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\V1\UserCollection;
 use App\Http\Resources\V1\UserResource;
+use App\Models\Test;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -103,7 +104,7 @@ class UserController extends Controller
       return response()->json([
         'status' => true,
         'message' => 'User logged in successfully',
-        'token' => $user->createToken('user-token')->plainTextToken,
+        'token' => $user->createToken('user-token', ['create'])->plainTextToken,
         'user' => new UserResource($user)
       ], 200);
     } catch (\Throwable $th) {
@@ -115,4 +116,45 @@ class UserController extends Controller
   }
 
 
+  /**
+   *
+   * @param Request
+   * @return JsonResponse
+   *
+   **/
+  public function passTest(Request $request)
+  {
+    try {
+
+      $validateUser = Validator::make($request->all(), [
+        'testId' => 'required',
+        'userId' => 'required'
+      ]);
+
+
+      if ($validateUser->fails()) {
+        return response()->json([
+          'status' => false,
+          'message' => 'Validation Error',
+          'errors' => $validateUser->errors()
+        ], 401);
+      }
+
+      $test_id = $request->testId;
+      $user_id = $request->userId;
+
+      $test = Test::find($test_id);
+      $user = User::find($user_id);
+
+      $user->passedTests()->save($test);
+
+      return response()->json(['status' => true, 'message' => 'Test successfully passed and added to your statistic '], 200);
+
+    } catch (\Throwable $th) {
+      return response()->json([
+        'status' => false,
+        'message' => $th->getMessage()
+      ], 500);
+    }
+  }
 }

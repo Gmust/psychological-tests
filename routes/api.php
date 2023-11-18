@@ -27,8 +27,8 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middl
   Route::apiResource('users', UserController::class);
   Route::apiResource('questions', QuestionController::class);
   Route::apiResource('answers', AnswerController::class);
+  Route::post('users/pass-test', [UserController::class, 'passTest']);
 });
-
 
 Route::post('/auth/register', [UserController::class, 'createUser']);
 Route::post('/auth/login', [UserController::class, 'loginUser']);
