@@ -1,7 +1,7 @@
 <?php
 
 use App\Http\Controllers\V1\AnswerController;
-use App\Http\Controllers\V1\LoginController;
+use App\Http\Controllers\V1\AuthController;
 use App\Http\Controllers\V1\QuestionController;
 use App\Http\Controllers\V1\TestController;
 use App\Http\Controllers\V1\UserController;
@@ -22,7 +22,7 @@ use Illuminate\Support\Facades\Route;
 //    return $request->user();
 //});
 
-Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middleware' => 'auth:sanctum'], static function () {
+Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middleware' => 'api'], static function () {
   Route::apiResource('tests', TestController::class);
   Route::apiResource('users', UserController::class);
   Route::apiResource('questions', QuestionController::class);
@@ -30,5 +30,15 @@ Route::group(['prefix' => 'v1', 'namespace' => 'App\Http\Controllers\V1', 'middl
   Route::post('users/pass-test', [UserController::class, 'passTest']);
 });
 
-Route::post('/auth/register', [UserController::class, 'createUser']);
-Route::post('/auth/login', [UserController::class, 'loginUser']);
+Route::group([
+  'middleware' => 'api',
+  'prefix' => 'auth'
+], function ($router) {
+  Route::post('login', [AuthController::class, 'login']);
+  Route::post('logout', [AuthController::class, 'logout']);
+  Route::post('refresh', [AuthController::class, 'refresh']);
+  Route::post('me', [AuthController::class, 'me']);
+});
+
+//Route::post('/auth/register', [UserController::class, 'createUser']);
+//Route::post('/auth/login', [UserController::class, 'loginUser']);
